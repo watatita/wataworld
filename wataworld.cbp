@@ -7,14 +7,18 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/wataworld" prefix_auto="1" extension_auto="1" />
+				<Option output="../cmp/wata/bin/Debug/wataworld" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="E:/project2/irrlicht-1.8.1/bin/Win32-gcc" />
-				<Option object_output="obj/Debug/" />
+				<Option object_output="../cmp/wata/obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
+				<Linker>
+					<Add library="$(irrlicht)\lib\Win32-gcc\libIrrlicht.a" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/wataworld" prefix_auto="1" extension_auto="1" />
@@ -24,6 +28,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -41,7 +46,9 @@
 			<Add library="gdi32" />
 			<Add directory="E:/project2/irrlicht-1.8.1/lib/Win32-gcc" />
 		</Linker>
+		<Unit filename="include/fMathGenerator.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/fMathGenerator.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
