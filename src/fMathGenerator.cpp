@@ -1,5 +1,5 @@
 #include "fMathGenerator.h"
-using namespace core;
+using namespace irr::core;
 fMathGenerator::fMathGenerator()
 {
     //ctor
@@ -79,7 +79,98 @@ f32 fMathGenerator::PerlinNoise(f32 x, f32 y,f32 scale)
     return u01_23;
 }
 
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  */
+void fMathGenerator::createDLA(vector2df center,f32 radius)
+{
 
+    vector2df x_mark;
+    vector2df start_mark;
+    start_mark = new_random_point(center,radius-10);
+
+    diffuse_point.push_back(center);
+
+    for(u32 i=0;i<200;i++)
+    {
+        if((i%100)==0)
+        {
+            start_mark = new_random_point(center,radius-10);
+        }
+        x_mark = start_mark;
+
+        while(!hasNeighbour(x_mark))
+        {
+            x_mark=new_random_point(x_mark,4);
+            if(check_distance(x_mark,center)>radius)    //out of bound
+            {
+                x_mark = start_mark;
+            }
+        }
+//        plotLine(x_mark,the_neighbour);
+        diffuse_point.push_back(x_mark);
+}
+
+
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  */
+bool fMathGenerator::hasNeighbour(vector2df test_point)
+{
+    if(diffuse_point.size()>0)
+    {
+
+        for(u32 i=0;i<diffuse_point.size();i++)
+        {
+            vector2df a;
+            a.X=test_point.X-diffuse_point[i].X;
+            a.Y=test_point.Y-diffuse_point[i].Y;
+            if(a.getLength()<5)
+            {
+
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+//gaussian process
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  */
+void fMathGenerator::gauss_process(u8 radius)
+{
+    for(u32 j=20; j<236; j++)
+    {
+        for(u32 i=20; i<236; i++)
+        {
+            f32 val=0,sum=0;
+            u32 c=0;
+            for(s32 jx = -radius;jx <= radius; jx++)
+            {
+                for(s32 ix = -radius;ix <= radius; ix++)
+                {
+
+                    f32 dsq = (ix*ix) + (jx*jx);
+                    f32 wgt = exp(-dsq / (2 * radius * radius));
+                    wgt = wgt/(2 * 3.14 * radius * radius);
+                    val += (gauss_srcs_vector[ix][jx] * wgt);
+                    sum += wgt;
+                }
+            }
+
+            c=(u32)(val/sum);
+            gauss_proc_vector[i][j]=c;
+        }
+    }
+}
+
+
+#ifndef __NO_POISSON_DISK_SAMPLING__
 /** @brief (one liner)
   *
   * (documentation goes here)
@@ -181,5 +272,5 @@ void fMathGenerator::createPoisson(u32 width, u32 height, u32 new_points_count)
         }
     }
 }
-
+#endif // __NO_POISSON_DISK_SAMPLING__
 
