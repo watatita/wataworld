@@ -47,4 +47,7 @@ class fMathGenerator
 
 };
 
+/*
+
+*/
 #endif // FMATHGENERATOR_H
