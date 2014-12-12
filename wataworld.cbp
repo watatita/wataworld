@@ -47,8 +47,10 @@
 			<Add directory="E:/project2/irrlicht-1.8.1/lib/Win32-gcc" />
 		</Linker>
 		<Unit filename="include/fMathGenerator.h" />
+		<Unit filename="include/fTreeGenSys.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/fMathGenerator.cpp" />
+		<Unit filename="src/fTreeGenSys.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
