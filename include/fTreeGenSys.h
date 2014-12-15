@@ -1,6 +1,15 @@
 #ifndef FTREEGENSYS_H
 #define FTREEGENSYS_H
 
+#include <irrlicht.h>
+
+using namespace irr;
+
+using namespace irr::core;
+using namespace irr::scene;
+using namespace irr::video;
+using namespace irr::io;
+using namespace irr::gui;
 
 class fTreeGenSys
 {
@@ -9,6 +18,17 @@ class fTreeGenSys
         virtual ~fTreeGenSys();
     protected:
     private:
+        array<char> lAxiomSys;
+        array<char> lAxiomGen;
+        array<position2di> lStack;
+        array<f32> lStackHAngle;
+        array<f32> lStackVAngle;
+        array<f32> lRatioStack;
+        array<position2di> ln;
+        array<position2di> ln2;
+        array<position3df> lPos;
+        array<position3df> lPos2;
+        position2di activepos;
 };
 
 #endif // FTREEGENSYS_H
@@ -18,6 +38,16 @@ class fTreeGenSys
 ====================================================
                 L-SYSTEM TEST
 ====================================================
+
+list symbol
+F : forward
++ : rotate vertical(z axis) CW
+- : rotate vertical(z axis) CCW
+{ : rotate horizontal(y axis) CW
+} : rotate horizontal(y axis) CCW
+[ : push all state
+] : pop all state
+
 
 
 #include <irrlicht.h>
@@ -134,7 +164,7 @@ int main(int argc, char** argv)
 //            bRatioStack.push_back(activeratio);
 //            activeratio=activeratio*0.8;
             break;
-        case ']':
+        case ']':   //Pop stack
             activepos.X=lstack[lstack.size()-1].X;
             activepos.Y=lstack[lstack.size()-1].Y;
             angle=lstkangle[lstkangle.size()-1];

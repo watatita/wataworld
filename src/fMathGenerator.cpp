@@ -12,9 +12,23 @@ fMathGenerator::fMathGenerator()
             f32 r=sqrt(static_grad[i][j].X*static_grad[i][j].X + static_grad[i][j].Y*static_grad[i][j].Y);
             static_grad[i][j].X=static_grad[i][j].X/r;
             static_grad[i][j].Y=static_grad[i][j].Y/r;
+            if(j==127)
+            {
+                static_grad[i][j].X=static_grad[i][0].X;
+                static_grad[i][j].Y=static_grad[i][0].Y;
+            }
         }
         static_grad[127][j].X=static_grad[0][j].X;
         static_grad[127][j].Y=static_grad[0][j].Y;
+    }
+
+    for (u32 j=0;j<256;j++)
+    {
+        for (u32 i=0;i<256;i++)
+        {
+            gauss_srcs_vector[i][j]=0;
+            gauss_proc_vector[i][j]=0;
+        }
     }
 
 }
@@ -79,6 +93,7 @@ f32 fMathGenerator::PerlinNoise(f32 x, f32 y,f32 scale)
     return u01_23;
 }
 
+//DLA
 /** @brief (one liner)
   *
   * (documentation goes here)
@@ -110,6 +125,7 @@ void fMathGenerator::createDLA(vector2df center,f32 radius)
         }
 //        plotLine(x_mark,the_neighbour);
         diffuse_point.push_back(x_mark);
+    }
 }
 
 
@@ -142,29 +158,117 @@ bool fMathGenerator::hasNeighbour(vector2df test_point)
   *
   * (documentation goes here)
   */
-void fMathGenerator::gauss_process(u8 radius)
+void fMathGenerator::gauss_process(u32 radius)
 {
+    initGaussTable(radius);
+
+    for (u32 j=0;j<256;j++)
+    {
+        for (u32 i=0;i<256;i++)
+        {
+            gauss_proc_vector[i][j]=0;
+        }
+    }
+
     for(u32 j=20; j<236; j++)
     {
         for(u32 i=20; i<236; i++)
         {
-            f32 val=0,sum=0;
-            u32 c=0;
-            for(s32 jx = -radius;jx <= radius; jx++)
+            f32 val=0;
+            for(s32 jn = -radius;jn <= radius; jn++)
             {
-                for(s32 ix = -radius;ix <= radius; ix++)
+                for(s32 in = -radius;in <= radius; in++)
                 {
-
-                    f32 dsq = (ix*ix) + (jx*jx);
-                    f32 wgt = exp(-dsq / (2 * radius * radius));
-                    wgt = wgt/(2 * 3.14 * radius * radius);
-                    val += (gauss_srcs_vector[ix][jx] * wgt);
-                    sum += wgt;
+                    val += (gauss_srcs_vector[i+in][j+jn] * getGaussTable(in,jn));
                 }
             }
 
-            c=(u32)(val/sum);
-            gauss_proc_vector[i][j]=c;
+            gauss_proc_vector[i][j]=(u8)(val/getGaussSum());
+        }
+    }
+}
+
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  */
+f32 fMathGenerator::getGaussSum()
+{
+    return gaussSum;
+}
+
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  * --gauss table explanation--
+  *   [-3 -2 -1  0  1  2  3]
+  *-------------------------
+  * 3 | 6  5  4  3  4  5  6}
+  * 2 | 5  4  3  2  3  4  5}
+  * 1 | 4  3  2  1  2  3  4}
+  * 0 | 3  2  1  0  1  2  3}
+  *-1 | 4  3  2  1  2  3  4}
+  *-2 | 5  4  3  2  3  4  5}
+  *-3 | 6  5  4  3  4  5  6}
+  *
+  * G[-1][2]=G[1][2]
+  * G[3][-2]=G[3][2]
+  * G[a][b]=G[abs(a)][abs(b)]
+
+  */
+f32 fMathGenerator::getGaussTable(s32 x, s32 y)
+{
+    u32 ux=abs(x);
+    u32 uy=abs(y);
+    return gaussTable[ux][uy];
+}
+
+/** @brief (one liner)
+  *
+  * (documentation goes here)
+  */
+void fMathGenerator::initGaussTable(u32 radius)
+{
+    if(radius>=20)
+    {
+        printf("out of radius\n");
+        return;
+    }
+
+    if(radius!=gaussRadius)
+    {
+        gaussRadius=radius;
+        s32 r=radius;
+        for(u32 j=0;j<=radius;j++)
+        {
+            for(u32 i=0;i<=radius;i++)
+            {
+                f32 dsq=i*i+j*j;
+                f32 wgt=exp(-dsq/(2*radius*radius));
+                wgt=wgt/(2*3.14*radius*radius);
+                gaussTable[i][j]=wgt;
+            }
+        }
+
+        gaussSum=0;
+        for(s32 jn=-r;jn<=r;jn++)
+        {
+            for(s32 in=-r;in<=r;in++)
+            {
+                gaussSum=gaussSum+getGaussTable(in,jn);
+            }
+        }
+    }
+
+}
+
+void fMathGenerator::resetGauss()
+{
+    for (u32 j=0;j<256;j++)
+    {
+        for (u32 i=0;i<256;i++)
+        {
+            gauss_srcs_vector[i][j]=0;
         }
     }
 }

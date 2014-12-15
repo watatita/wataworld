@@ -5,7 +5,7 @@
 #include <math.h>
 
 #define POISSON_CELL_SIZE   8
-#define __NO_POISSON_DISK_SAMPLING__
+//#define __NO_POISSON_DISK_SAMPLING__
 
 using namespace irr;
 using namespace irr::core;
@@ -21,7 +21,9 @@ class fMathGenerator
         bool hasNeighbour(vector2df test_point);
         void createDLA(vector2df center,f32 radius);
     //gaussian process
-        void gauss_process(u8 radius);
+        void gauss_process(u32 radius);
+        void initGaussTable(u32 radius);
+        void resetGauss();
     //unused Poisson disk sampling
 //    #ifndef __NO_POISSON_DISK_SAMPLING__
         f32 check_distance(core::vector2df a, core::vector2df b);
@@ -40,6 +42,14 @@ class fMathGenerator
         //gaussian process
         u8 gauss_srcs_vector[256][256];
         u8 gauss_proc_vector[256][256];
+
+        f32 getGaussTable(s32 x,s32 y);
+        f32 getGaussSum();
+
+        f32 gaussTable[20][20];
+        f32 gaussSum;
+        u32 gaussRadius;
+
 //    #ifndef __NO_POISSON_DISK_SAMPLING__
         array<vector2df> process_poisson;
         array<vector2df> grid_handler[128][128];
