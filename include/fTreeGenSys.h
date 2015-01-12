@@ -2,6 +2,7 @@
 #define FTREEGENSYS_H
 
 #include <irrlicht.h>
+#define _MAX_AXIOM_LENGHT_  5000
 
 using namespace irr;
 
@@ -16,19 +17,38 @@ class fTreeGenSys
     public:
         fTreeGenSys();
         virtual ~fTreeGenSys();
+
+        void lRegisterSymbol(char symbol,char next[64]);
+        void lUnRegisterSymbol(char symbol);
+        void lSetStart(char startSymbol[64]);
+        void lSetAngle(f32 degree);
+        void lGenerateLSystem(u32 countLoop);
+
+
+
     protected:
     private:
-        array<char> lAxiomSys;
-        array<char> lAxiomGen;
-        array<position2di> lStack;
-        array<f32> lStackHAngle;
-        array<f32> lStackVAngle;
-        array<f32> lRatioStack;
-        array<position2di> ln;
-        array<position2di> ln2;
-        array<position3df> lPos;
-        array<position3df> lPos2;
-        position2di activepos;
+
+
+        array<f32> ltRatioStack;
+        array<vector3df> ltStackAngle;
+        array<vector3df> ltStackForward;
+        array<vector3df> ltStackPos;
+        array<vector3df> ltStackPos2;
+        vector3df activepos;
+        f32 lAngleIncrement;
+
+        s32 lCharToIndex(char symbol);
+        void lAddAxiomSuccessor(char symbol);
+        void lSwap_axiom();
+        void lReset_axiom_successor();
+        void lReset_axiom_predecessor();
+
+        char lAxiomPredecessor[_MAX_AXIOM_LENGHT_];
+        char lAxiomSuccessor[_MAX_AXIOM_LENGHT_];   //generated axiom
+        u32 lAxSuccessorCount;
+        char lReplace[27][64];
+        bool lSymbolRegistered[27];
 };
 
 #endif // FTREEGENSYS_H
@@ -41,14 +61,16 @@ class fTreeGenSys
 
 list symbol
 F : forward
-+ : rotate vertical(z axis) CW
-- : rotate vertical(z axis) CCW
-{ : rotate horizontal(y axis) CW
-} : rotate horizontal(y axis) CCW
 [ : push all state
 ] : pop all state
 
-
++ Turn left by angle δ, using rotation matrix RU(δ).
+− Turn right by angle δ, using rotation matrix RU(−δ).
+& Pitch down by angle δ, using rotation matrix RL(δ).
+∧ Pitch up by angleδ, using rotation matrix RL(−δ).
+\ Roll left by angle δ, using rotation matrix RH(δ).
+/ Roll right by angle δ, using rotation matrix RH(−δ).
+| Turn around, using rotation matrix RU(180◦).
 
 #include <irrlicht.h>
 
