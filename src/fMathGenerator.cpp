@@ -93,42 +93,80 @@ f32 fMathGenerator::PerlinNoise(f32 x, f32 y,f32 scale)
   *
   * (documentation goes here)
   */
-void fMathGenerator::createDLA(vector2df center,f32 radius)
+void fMathGenerator::dlaCreateDLA(u32 x,u32 y,f32 radius)
 {
-
+    dlaResetDLA();
+    vector2df center(x,y);
     vector2df x_mark;
-    vector2df start_mark;
-    start_mark = new_random_point(center,radius-10);
 
     diffuse_point.push_back(center);
 
-    for(u32 i=0;i<200;i++)
+    for(u32 i=0;i<32;i++)
     {
-        if((i%100)==0)
-        {
-            start_mark = new_random_point(center,radius-10);
-        }
-        x_mark = start_mark;
+        u16 r2 = rand() % 8;
+        f32 angle = 0.0175*r2*45;// 0.0055= 1/180 derajat
+        x_mark.X = center.X+round(50*cos(angle));
+        x_mark.Y = center.Y+round(50*sin(angle));
 
-        while(!hasNeighbour(x_mark))
+        while(!dlaHasNeighbour(x_mark))
         {
-            x_mark=new_random_point(x_mark,4);
-            if(check_distance(x_mark,center)>radius)    //out of bound
+            x_mark=randomWalk(x_mark);
+            while(dlaIsOutOfPosition(x_mark,center,100))
             {
-                x_mark = start_mark;
+                r2 = rand() % 8;
+                angle = 0.0175*r2*45;// 0.0055= 1/180 derajat
+                x_mark.X = center.X+round(50*cos(angle));
+                x_mark.Y = center.Y+round(50*sin(angle));
             }
         }
 //        plotLine(x_mark,the_neighbour);
         diffuse_point.push_back(x_mark);
     }
+
+    for(u32 i=0;i<32;i++)
+    {
+        u32 n=diffuse_point[i].X;
+        u32 m=diffuse_point[i].Y;
+        TextureLayer[LAYER_DLA][n][m]=0xff;
+    }
+
 }
 
+void fMathGenerator::dlaResetDLA()
+{
+    diffuse_point.clear();
+}
+
+bool fMathGenerator::dlaIsOutOfPosition(vector2df test_point,vector2df center,f32 radius)
+{
+    if(test_point.X<0||test_point.X>_IMAGE_DLA_SIZE_)
+    {
+        return true;
+    }
+
+    if(test_point.Y<0||test_point.Y>_IMAGE_DLA_SIZE_)
+    {
+        return true;
+    }
+
+    vector2df a;
+    a.X=test_point.X-center.X;
+    a.Y=test_point.Y-center.Y;
+
+    if(a.getLength()<radius)
+    {
+        return false;
+    }else
+    {
+        return true;
+    }
+}
 
 /** @brief (one liner)
   *
   * (documentation goes here)
   */
-bool fMathGenerator::hasNeighbour(vector2df test_point)
+bool fMathGenerator::dlaHasNeighbour(vector2df test_point)
 {
     if(diffuse_point.size()>0)
     {
@@ -149,9 +187,9 @@ bool fMathGenerator::hasNeighbour(vector2df test_point)
     return false;
 }
 
-void fMathGenerator::setPixel(int x, int y)
+void fMathGenerator::setPixel(s32 x, s32 y)
 {
-    TextureLayer[LAYER_DLA_1][x][y]=255;
+    TextureLayer[LAYER_DLA][x][y]=0x80;
 }
 
 void fMathGenerator::plotLine(int x0, int y0, int x1, int y1)
@@ -169,6 +207,76 @@ void fMathGenerator::plotLine(int x0, int y0, int x1, int y1)
       if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
       if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
    }
+}
+
+//Worley function
+void fMathGenerator::worleyInitWorleyLayer()
+{
+    core::vector2df next_point;
+    u32 highest=0;
+
+    for(u32 n=0;n<3;n++)
+    {
+        next_point.X = rand() % 32;
+        next_point.Y = rand() % 128;
+        worley_point.push_back(next_point);
+    }
+
+    for(u32 n=0;n<3;n++)
+    {
+        next_point.X = 96+(rand() % 32);
+        next_point.Y = rand() % 128;
+        worley_point.push_back(next_point);
+    }
+
+    for(u32 n=0;n<2;n++)
+    {
+        next_point.X = 32+(rand() % 64);
+        next_point.Y = rand() % 128;
+        worley_point.push_back(next_point);
+    }
+
+    for(u32 j=0;j<128;j++)
+    {
+        for(u32 i=0;i<128;i++)
+        {
+            TextureLayer[LAYER_WORLEY][i][j]=worleyGetDistance(i,j);
+            if(TextureLayer[LAYER_WORLEY][i][j]>highest)
+                highest=TextureLayer[LAYER_WORLEY][i][j];
+        }
+    }
+
+    for(u32 j=0;j<128;j++)
+    {
+        for(u32 i=0;i<128;i++)
+        {
+            f32 c=(f32) TextureLayer[LAYER_WORLEY][i][j];
+            c=(c/highest)*0xff;
+            TextureLayer[LAYER_WORLEY][i][j]=(u8) round(c);
+            if(i<32)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*i/32;
+            if(i>96)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*((f32)(128-i)/32);
+            if(j<32)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*j/32;
+            if(j>96)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*((f32)(128-j)/32);
+
+        }
+    }
+}
+
+f32  fMathGenerator::worleyGetDistance(f32 x,f32 y)
+{
+    vector2df a;
+    vector2df point(x,y);
+    f32 distance=1284;
+    for(u32 i=0;i<worley_point.size();i++)
+    {
+        a.X=point.X-worley_point[i].X;
+        a.Y=point.Y-worley_point[i].Y;
+        if(a.getLength()<distance)
+        {
+            distance=a.getLength();
+        }
+    }
+    return distance;
 }
 
 //gaussian process

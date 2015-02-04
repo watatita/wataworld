@@ -7,23 +7,32 @@
 #define POISSON_CELL_SIZE   8
 //#define __NO_POISSON_DISK_SAMPLING__
 
-#define LAYER_DLA_1         1
-#define LAYER_DLA_2         2
-#define LAYER_DLA_3         3
-#define LAYER_DLA_4         4
-#define LAYER_CONTINENT_1   5
-#define LAYER_CONTINENT_2   6
-#define LAYER_CONTINENT_3   7
-#define LAYER_CONTINENT_4   8
-#define LAYER_CLIMATE_1     9
-#define LAYER_CLIMATE_2     10
+#define _IMAGE_DLA_SIZE_    128
+
+#define LAYER_WORLEY        1
+#define LAYER_DLA           2
+#define LAYER_MOUNTAIN      3
+#define LAYER_LAND          4
+#define LAYER_OCEAN_MASK    5
+#define LAYER_WORLD_MAP     6
+#define LAYER_HUMIDITY      7
+#define LAYER_TEMPERATE     8
+#define LAYER_BIOME         9
+#define LAYER_TERRITORY     10
 #define LAYER_POISSON_1     11
 #define LAYER_POISSON_2     12
-#define LAYER_TERRITORY_1   13
-#define LAYER_RIVER_1       14
+#define LAYER_POISSON_3     13
+#define LAYER_ZOOM_1        14
+
+#define randomWalk(_c_)   new_random_point(_c_,5);
 
 using namespace irr;
 using namespace irr::core;
+using namespace irr::scene;
+using namespace irr::video;
+using namespace irr::io;
+using namespace irr::gui;
+
 class fMathGenerator
 {
     public:
@@ -33,10 +42,16 @@ class fMathGenerator
         f32 PerlinNoise(f32 x,f32 y,f32 scale);
 
     //DLA function
-        bool hasNeighbour(vector2df test_point);
-        void createDLA(vector2df center,f32 radius);
+        bool dlaHasNeighbour(vector2df test_point);
+        void dlaResetDLA();
+        void dlaCreateDLA(u32 x,u32 y,f32 radius);
+        bool dlaIsOutOfPosition(vector2df test_point,vector2df center,f32 radius);
         void setPixel(int x, int y);
         void plotLine(int x0, int y0, int x1, int y1);
+    //Worley function
+        void worleyInitWorleyLayer();
+        f32  worleyGetDistance(f32 x,f32 y);
+
     //gaussian process
         void gauss_process(u32 radius);
         void initGaussTable(u32 radius);
@@ -60,9 +75,10 @@ class fMathGenerator
 
         //DLA
         array<vector2df> diffuse_point;
+        array<vector2df> worley_point;
         //gaussian process
-        u8 gauss_srcs_vector[256][256];
-        u8 gauss_proc_vector[256][256];
+        f32 gauss_srcs_vector[256][256];
+        f32 gauss_proc_vector[256][256];
 
         u8 TextureLayer[16][128][128];
 
