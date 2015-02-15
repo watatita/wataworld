@@ -2,7 +2,7 @@
 #define FTREEGENSYS_H
 
 #include <irrlicht.h>
-#define _MAX_AXIOM_LENGHT_  5000
+#define _MAX_AXIOM_LENGHT_  0x3ffff
 
 using namespace irr;
 

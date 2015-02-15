@@ -46,10 +46,20 @@
 			<Add library="gdi32" />
 			<Add directory="E:/project2/irrlicht-1.8.1/lib/Win32-gcc" />
 		</Linker>
+		<Unit filename="include/fMapGen.h" />
 		<Unit filename="include/fMathGenerator.h" />
+		<Unit filename="include/fParamLSys.h" />
+		<Unit filename="include/fRandomGenDLA.h" />
+		<Unit filename="include/fRandomGenWorley.h" />
+		<Unit filename="include/fTextureCreator.h" />
 		<Unit filename="include/fTreeGenSys.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/fMapGen.cpp" />
 		<Unit filename="src/fMathGenerator.cpp" />
+		<Unit filename="src/fParamLSys.cpp" />
+		<Unit filename="src/fRandomGenDLA.cpp" />
+		<Unit filename="src/fRandomGenWorley.cpp" />
+		<Unit filename="src/fTextureCreator.cpp" />
 		<Unit filename="src/fTreeGenSys.cpp" />
 		<Extensions>
 			<code_completion />

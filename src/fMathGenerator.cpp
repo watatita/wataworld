@@ -22,12 +22,19 @@ fMathGenerator::fMathGenerator()
         static_grad[127][j].Y=static_grad[0][j].Y;
     }
 
-    for (u32 j=0;j<168;j++)
+    for (u32 j=0;j<128;j++)
     {
-        for (u32 i=0;i<168;i++)
+        for (u32 i=0;i<128;i++)
         {
-            gauss_srcs_vector[i][j]=0;
-            gauss_proc_vector[i][j]=0;
+            img_gradframe[i][j]=1.0;
+            if(i<16)    img_gradframe[i][j]=((f32)i)/16;
+            if(i>112)   img_gradframe[i][j]=((f32)128-i)/16;
+            if(j<16)    img_gradframe[i][j]=(f32)j/16;
+            if(j>112)   img_gradframe[i][j]=((f32)128-j)/16;
+//            img_gradframe[i][j]=1-cos((f32)j/32);
+//            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
+//            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;
+
         }
     }
 
@@ -88,307 +95,11 @@ f32 fMathGenerator::PerlinNoise(f32 x, f32 y,f32 scale)
     return u01_23;
 }
 
-//DLA
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-void fMathGenerator::dlaCreateDLA(u32 x,u32 y,f32 radius)
+f32 fMathGenerator::GradientFrame(u32 x,u32 y)
 {
-    dlaResetDLA();
-    vector2df center(x,y);
-    vector2df x_mark;
-
-    diffuse_point.push_back(center);
-
-    for(u32 i=0;i<32;i++)
-    {
-        u16 r2 = rand() % 8;
-        f32 angle = 0.0175*r2*45;// 0.0055= 1/180 derajat
-        x_mark.X = center.X+round(50*cos(angle));
-        x_mark.Y = center.Y+round(50*sin(angle));
-
-        while(!dlaHasNeighbour(x_mark))
-        {
-            x_mark=randomWalk(x_mark);
-            while(dlaIsOutOfPosition(x_mark,center,100))
-            {
-                r2 = rand() % 8;
-                angle = 0.0175*r2*45;// 0.0055= 1/180 derajat
-                x_mark.X = center.X+round(50*cos(angle));
-                x_mark.Y = center.Y+round(50*sin(angle));
-            }
-        }
-//        plotLine(x_mark,the_neighbour);
-        diffuse_point.push_back(x_mark);
-    }
-
-    for(u32 i=0;i<32;i++)
-    {
-        u32 n=diffuse_point[i].X;
-        u32 m=diffuse_point[i].Y;
-        TextureLayer[LAYER_DLA][n][m]=0xff;
-    }
-
-}
-
-void fMathGenerator::dlaResetDLA()
-{
-    diffuse_point.clear();
-}
-
-bool fMathGenerator::dlaIsOutOfPosition(vector2df test_point,vector2df center,f32 radius)
-{
-    if(test_point.X<0||test_point.X>_IMAGE_DLA_SIZE_)
-    {
-        return true;
-    }
-
-    if(test_point.Y<0||test_point.Y>_IMAGE_DLA_SIZE_)
-    {
-        return true;
-    }
-
-    vector2df a;
-    a.X=test_point.X-center.X;
-    a.Y=test_point.Y-center.Y;
-
-    if(a.getLength()<radius)
-    {
-        return false;
-    }else
-    {
-        return true;
-    }
-}
-
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-bool fMathGenerator::dlaHasNeighbour(vector2df test_point)
-{
-    if(diffuse_point.size()>0)
-    {
-
-        for(u32 i=0;i<diffuse_point.size();i++)
-        {
-            vector2df a;
-            a.X=test_point.X-diffuse_point[i].X;
-            a.Y=test_point.Y-diffuse_point[i].Y;
-            if(a.getLength()<5)
-            {
-                plotLine(diffuse_point[i].X,diffuse_point[i].Y,
-                         test_point.X,test_point.Y);
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void fMathGenerator::setPixel(s32 x, s32 y)
-{
-    TextureLayer[LAYER_DLA][x][y]=0x80;
-}
-
-void fMathGenerator::plotLine(int x0, int y0, int x1, int y1)
-{
-    int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
-   int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1;
-   int err = dx+dy, e2; /* error value e_xy */
-   sx*=1;
-   sy*=1;
-
-   for(;;){  /* loop */
-      setPixel(x0,y0);
-      if (x0==x1 && y0==y1) break;
-      e2 = 2*err;
-      if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-      if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
-   }
-}
-
-//Worley function
-void fMathGenerator::worleyInitWorleyLayer()
-{
-    core::vector2df next_point;
-    u32 highest=0;
-
-    for(u32 n=0;n<3;n++)
-    {
-        next_point.X = rand() % 32;
-        next_point.Y = rand() % 128;
-        worley_point.push_back(next_point);
-    }
-
-    for(u32 n=0;n<3;n++)
-    {
-        next_point.X = 96+(rand() % 32);
-        next_point.Y = rand() % 128;
-        worley_point.push_back(next_point);
-    }
-
-    for(u32 n=0;n<2;n++)
-    {
-        next_point.X = 32+(rand() % 64);
-        next_point.Y = rand() % 128;
-        worley_point.push_back(next_point);
-    }
-
-    for(u32 j=0;j<128;j++)
-    {
-        for(u32 i=0;i<128;i++)
-        {
-            TextureLayer[LAYER_WORLEY][i][j]=worleyGetDistance(i,j);
-            if(TextureLayer[LAYER_WORLEY][i][j]>highest)
-                highest=TextureLayer[LAYER_WORLEY][i][j];
-        }
-    }
-
-    for(u32 j=0;j<128;j++)
-    {
-        for(u32 i=0;i<128;i++)
-        {
-            f32 c=(f32) TextureLayer[LAYER_WORLEY][i][j];
-            c=(c/highest)*0xff;
-            TextureLayer[LAYER_WORLEY][i][j]=(u8) round(c);
-            if(i<32)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*i/32;
-            if(i>96)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*((f32)(128-i)/32);
-            if(j<32)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*j/32;
-            if(j>96)    TextureLayer[LAYER_WORLEY][i][j]=TextureLayer[LAYER_WORLEY][i][j]*((f32)(128-j)/32);
-
-        }
-    }
-}
-
-f32  fMathGenerator::worleyGetDistance(f32 x,f32 y)
-{
-    vector2df a;
-    vector2df point(x,y);
-    f32 distance=1284;
-    for(u32 i=0;i<worley_point.size();i++)
-    {
-        a.X=point.X-worley_point[i].X;
-        a.Y=point.Y-worley_point[i].Y;
-        if(a.getLength()<distance)
-        {
-            distance=a.getLength();
-        }
-    }
-    return distance;
-}
-
-//gaussian process
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-void fMathGenerator::gauss_process(u32 radius)
-{
-
-    initGaussTable(radius);
-
-    for (u32 j=0;j<168;j++)
-    {
-        for (u32 i=0;i<168;i++)
-        {
-            gauss_proc_vector[i][j]=0;
-        }
-    }
-
-    for(u32 j=20; j<148; j++)
-    {
-        for(u32 i=20; i<148; i++)
-        {
-            f32 val=0;
-            for(s32 jn = -radius;jn <= radius; jn++)
-            {
-                for(s32 in = -radius;in <= radius; in++)
-                {
-                    val += (gauss_srcs_vector[i+in][j+jn] * getGaussTable(in,jn));
-                }
-            }
-
-            gauss_proc_vector[i][j]=(u8)(val/gaussSum);
-        }
-    }
-}
-
-
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  * --gauss table explanation--
-  *   [-3 -2 -1  0  1  2  3]
-  *-------------------------
-  * 3 | 6  5  4  3  4  5  6}
-  * 2 | 5  4  3  2  3  4  5}
-  * 1 | 4  3  2  1  2  3  4}
-  * 0 | 3  2  1  0  1  2  3}
-  *-1 | 4  3  2  1  2  3  4}
-  *-2 | 5  4  3  2  3  4  5}
-  *-3 | 6  5  4  3  4  5  6}
-  *
-  * G[-1][2]=G[1][2]
-  * G[3][-2]=G[3][2]
-  * G[a][b]=G[abs(a)][abs(b)]
-
-  */
-f32 fMathGenerator::getGaussTable(s32 x, s32 y)
-{
-    u32 ux=abs(x);
-    u32 uy=abs(y);
-    return gaussTable[ux][uy];
-}
-
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-void fMathGenerator::initGaussTable(u32 radius)
-{
-    if(radius>=32)
-    {
-        printf("out of radius\n");
-        return;
-    }
-
-    if(radius!=gaussRadius)
-    {
-        gaussRadius=radius;
-        s32 r=radius;
-        for(u32 j=0;j<=radius;j++)
-        {
-            for(u32 i=0;i<=radius;i++)
-            {
-                f32 dsq=i*i+j*j;
-                f32 wgt=exp(-dsq/(2*radius*radius));
-                wgt=wgt/(2*3.14*radius*radius);
-                gaussTable[i][j]=wgt;
-            }
-        }
-
-        gaussSum=0;
-        for(s32 jn=-r;jn<=r;jn++)
-        {
-            for(s32 in=-r;in<=r;in++)
-            {
-                gaussSum=gaussSum+getGaussTable(in,jn);
-            }
-        }
-    }
-}
-
-void fMathGenerator::resetGauss()
-{
-    for (u32 j=0;j<256;j++)
-    {
-        for (u32 i=0;i<256;i++)
-        {
-            gauss_srcs_vector[i][j]=0;
-        }
-    }
+    x=x%128;
+    y=y%128;
+    return img_gradframe[x][y];
 }
 
 f32 fMathGenerator::scaleImage(f32 x, f32 y,f32 scale)
@@ -404,10 +115,10 @@ f32 fMathGenerator::scaleImage(f32 x, f32 y,f32 scale)
     f32 frac_x=cx-ix;
     f32 frac_y=cy-iy;
 
-    f32 u0=TextureLayer[0] [ix] [iy];
-    f32 u1=TextureLayer[0][ix2] [iy];
-    f32 u2=TextureLayer[0] [ix][iy2];
-    f32 u3=TextureLayer[0][ix2][iy2];
+    f32 u0=v_img [ix] [iy];
+    f32 u1=v_img[ix2] [iy];
+    f32 u2=v_img [ix][iy2];
+    f32 u3=v_img[ix2][iy2];
 
     f32 Sx   = 3*(frac_x*frac_x) - 2*(frac_x*frac_x*frac_x);
     f32 u0_1 = u0 + Sx*(u1-u0);
@@ -419,75 +130,6 @@ f32 fMathGenerator::scaleImage(f32 x, f32 y,f32 scale)
     return u01_23;
 }
 
-/** @ HSV to RGB
-  *
-  * modified from: http://www.cs.rit.edu/~ncs/color/t_convert.html
-  *
-  * h:  color degree, 0 to 360 degree
-  * s:  color saturation, 0.0 to 1.0
-  * v:  color value, 0 to 255
-  */
-SColor fMathGenerator::HSVtoRGB( float h, float s, float v )
-{
-	u32 i;
-	f32 f, p, q, t;
-	u32  r,g,b;
-	SColor rgbColor;
-
-	if( s == 0 ) {
-		// achromatic (grey) *r = *g = *b = v;
-		rgbColor.setBlue(v);
-		rgbColor.setGreen(v);
-		rgbColor.setRed(v);
-		return rgbColor;
-	}
-
-	h /= 60;			// sector 0 to 5
-	i = floor( h );
-	f = h - i;			// factorial part of h
-	p = v * ( 1 - s );
-	q = v * ( 1 - s * f );
-	t = v * ( 1 - s * ( 1 - f ) );
-
-	switch( i ) {
-		case 0:
-			r = (u32) v;
-			g = (u32) t;
-			b = (u32) p;
-			break;
-		case 1:
-			r = (u32) q;
-			g = (u32) v;
-			b = (u32) p;
-			break;
-		case 2:
-			r = (u32) p;
-			g = (u32) v;
-			b = (u32) t;
-			break;
-		case 3:
-			r = (u32) p;
-			g = (u32) q;
-			b = (u32) v;
-			break;
-		case 4:
-			r = (u32) t;
-			g = (u32) p;
-			b = (u32) v;
-			break;
-		default:		// case 5:
-			r = (u32) v;
-			g = (u32) p;
-			b = (u32) q;
-			break;
-	}
-
-	rgbColor.setBlue(b);
-    rgbColor.setGreen(g);
-    rgbColor.setRed(r);
-    return rgbColor;
-
-}
 
 #ifndef __NO_POISSON_DISK_SAMPLING__
 /** @brief (one liner)

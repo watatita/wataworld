@@ -7,22 +7,7 @@
 #define POISSON_CELL_SIZE   8
 //#define __NO_POISSON_DISK_SAMPLING__
 
-#define _IMAGE_DLA_SIZE_    128
 
-#define LAYER_WORLEY        1
-#define LAYER_DLA           2
-#define LAYER_MOUNTAIN      3
-#define LAYER_LAND          4
-#define LAYER_OCEAN_MASK    5
-#define LAYER_WORLD_MAP     6
-#define LAYER_HUMIDITY      7
-#define LAYER_TEMPERATE     8
-#define LAYER_BIOME         9
-#define LAYER_TERRITORY     10
-#define LAYER_POISSON_1     11
-#define LAYER_POISSON_2     12
-#define LAYER_POISSON_3     13
-#define LAYER_ZOOM_1        14
 
 #define randomWalk(_c_)   new_random_point(_c_,5);
 
@@ -40,26 +25,11 @@ class fMathGenerator
         virtual ~fMathGenerator();
         position2df gradien(s32 x,s32 y);
         f32 PerlinNoise(f32 x,f32 y,f32 scale);
+        f32 GradientFrame(u32 x,u32 y);
 
-    //DLA function
-        bool dlaHasNeighbour(vector2df test_point);
-        void dlaResetDLA();
-        void dlaCreateDLA(u32 x,u32 y,f32 radius);
-        bool dlaIsOutOfPosition(vector2df test_point,vector2df center,f32 radius);
-        void setPixel(int x, int y);
-        void plotLine(int x0, int y0, int x1, int y1);
-    //Worley function
-        void worleyInitWorleyLayer();
-        f32  worleyGetDistance(f32 x,f32 y);
 
-    //gaussian process
-        void gauss_process(u32 radius);
-        void initGaussTable(u32 radius);
-        void resetGauss();
     //image scalling
         f32 scaleImage(f32 x, f32 y,f32 scale);
-    //color conversion
-        SColor HSVtoRGB( float h, float s, float v );
     //unused Poisson disk sampling
 //    #ifndef __NO_POISSON_DISK_SAMPLING__
         f32 check_distance(core::vector2df a, core::vector2df b);
@@ -72,21 +42,10 @@ class fMathGenerator
     protected:
     private:
         position2df static_grad[128][128];
+        u8  v_img[128][128];
+        f32 img_gradframe[128][128];
 
-        //DLA
-        array<vector2df> diffuse_point;
-        array<vector2df> worley_point;
-        //gaussian process
-        f32 gauss_srcs_vector[256][256];
-        f32 gauss_proc_vector[256][256];
 
-        u8 TextureLayer[16][128][128];
-
-        f32 getGaussTable(s32 x,s32 y);
-
-        f32 gaussTable[32][32];
-        f32 gaussSum;
-        u32 gaussRadius;
 
 //    #ifndef __NO_POISSON_DISK_SAMPLING__
         array<vector2df> process_poisson;
