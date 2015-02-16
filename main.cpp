@@ -82,7 +82,7 @@ int main(int argc, char** argv)
     IAnimatedMesh* ground=smgr->addTerrainMesh(" ",worldImg,worldImg,dimension2df(32,32),512);
     ISceneNode* terra=smgr->addAnimatedMeshSceneNode(ground);
     terra->setMaterialFlag(EMF_LIGHTING,false);
-    terra->setPosition(vector3df(-2048,-32,-2048));
+    terra->setPosition(vector3df(-2048,-64,-2048));
 
 
     while(device->run())

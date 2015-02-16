@@ -21,22 +21,22 @@ fMathGenerator::fMathGenerator()
         static_grad[127][j].X=static_grad[0][j].X;
         static_grad[127][j].Y=static_grad[0][j].Y;
     }
-
-    for (u32 j=0;j<128;j++)
-    {
-        for (u32 i=0;i<128;i++)
-        {
-            img_gradframe[i][j]=1.0;
-            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
-            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;
-            if(j<16)    img_gradframe[i][j]=img_gradframe[i][j]*(f32)j/16;
-            if(j>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-j)/16;
-//            img_gradframe[i][j]=1-cos((f32)j/32);
+//
+//    for (u32 j=0;j<128;j++)
+//    {
+//        for (u32 i=0;i<128;i++)
+//        {
+//            img_gradframe[i][j]=1.0;
 //            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
 //            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;
-
-        }
-    }
+//            if(j<16)    img_gradframe[i][j]=img_gradframe[i][j]*(f32)j/16;
+//            if(j>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-j)/16;
+////            img_gradframe[i][j]=1-cos((f32)j/32);
+////            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
+////            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;
+//
+//        }
+//    }
 
 }
 
@@ -99,7 +99,15 @@ f32 fMathGenerator::GradientFrame(u32 x,u32 y)
 {
     x=x%128;
     y=y%128;
-    return img_gradframe[x][y];
+
+    f32 g=1.0;
+
+    if(x<16)    g=g*((f32)x)/16;
+    if(x>112)   g=g*((f32)128-x)/16;
+    if(y<16)    g=g*(f32)y/16;
+    if(y>112)   g=g*((f32)128-y)/16;
+
+    return g;
 }
 
 f32 fMathGenerator::scaleImage(f32 x, f32 y,f32 scale)

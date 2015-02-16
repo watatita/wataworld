@@ -43,8 +43,6 @@ class fMathGenerator
     private:
         position2df static_grad[128][128];
         u8  v_img[128][128];
-        f32 img_gradframe[128][128];
-
 
 
 //    #ifndef __NO_POISSON_DISK_SAMPLING__
