@@ -2,6 +2,9 @@
 #define FMAPGEN_H
 
 #include <irrlicht.h>
+#include <fMathGenerator.h>
+#include <fRandomGenDLA.h>
+#include <fRandomGenWorley.h>
 
 #define LAYER_WORLEY        1
 #define LAYER_DLA           2
@@ -31,9 +34,17 @@ class fMapGen
         fMapGen();
         virtual ~fMapGen();
     //color conversion
+        void createWorldMap(fMathGenerator* fmg,
+                            fRandomGenDLA*  dla,
+                            fRandomGenWorley* worley);
+        u32 getMap(u32 x,u32 y,u32 layer);
+        u32 getMap(IImage* img,u32 layer);
 
     protected:
     private:
+        fMathGenerator* fmg;
+        fRandomGenDLA*  dla;
+        fRandomGenWorley* worley;
 
         u8 TextureLayer[16][128][128];
 };

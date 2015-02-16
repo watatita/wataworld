@@ -27,10 +27,10 @@ fMathGenerator::fMathGenerator()
         for (u32 i=0;i<128;i++)
         {
             img_gradframe[i][j]=1.0;
-            if(i<16)    img_gradframe[i][j]=((f32)i)/16;
-            if(i>112)   img_gradframe[i][j]=((f32)128-i)/16;
-            if(j<16)    img_gradframe[i][j]=(f32)j/16;
-            if(j>112)   img_gradframe[i][j]=((f32)128-j)/16;
+            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
+            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;
+            if(j<16)    img_gradframe[i][j]=img_gradframe[i][j]*(f32)j/16;
+            if(j>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-j)/16;
 //            img_gradframe[i][j]=1-cos((f32)j/32);
 //            if(i<16)    img_gradframe[i][j]=img_gradframe[i][j]*((f32)i)/16;
 //            if(i>112)   img_gradframe[i][j]=img_gradframe[i][j]*((f32)128-i)/16;

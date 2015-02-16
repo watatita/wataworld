@@ -4,6 +4,7 @@
 #include <fTextureCreator.h>
 #include <fRandomGenDLA.h>
 #include <fRandomGenWorley.h>
+#include <fMapGen.h>
 
 using namespace irr;
 
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
     IAnimatedMesh* oceanmesh=smgr->addHillPlaneMesh("hilly",dimension2df(32,32),dimension2d<u32>(128,128)
                                                     ,0, 0,
                                                     core::dimension2d<f32>(0,0));
-    ISceneNode* ocean=smgr->addWaterSurfaceSceneNode(oceanmesh,8,1024,64);
+    ISceneNode* ocean=smgr->addWaterSurfaceSceneNode(oceanmesh,0.5,1024,2);
     ocean->setMaterialTexture(1,watertex);
     ocean->setMaterialTexture(0,watertex);
     ocean->setMaterialFlag(EMF_LIGHTING,false);
@@ -62,31 +63,26 @@ int main(int argc, char** argv)
     smgr->setAmbientLight(SColorf(0.91,0.91,0.91,1));
 
     fRandomGenWorley ww;
-    ww.worleyInitWorleyLayer();
-    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
-    for(u32 j=0;j<128;j++)
-    {
-        for(u32 i=0;i<128;i++)
-        {
-            s32 c=ww.worleyGetValue(i,j)*0xff;
-            if(c>0xff) c=0xff;
-            worleyImg->setPixel(i,j,SColor(0xff,c,c,c));
-        }
-    }
-    ITexture* worleyTxt=driver->addTexture("ww",worleyImg);
-
     fRandomGenDLA dl;
-    dl.dlaCreateDLA(64,64,56);
+    fMapGen mapgg;
+    mapgg.createWorldMap(&mgen,&dl,&ww);
+
+    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
     IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
-    for(u32 j=0;j<128;j++)
-    {
-        for(u32 i=0;i<128;i++)
-        {
-            s32 c=dl.getImage(i,j)*0xff;
-            dlaImg->setPixel(i,j,SColor(0xff,c,c,c));
-        }
-    }
+    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
+
+    mapgg.getMap(dlaImg,LAYER_DLA);
+    mapgg.getMap(worleyImg,LAYER_WORLEY);
+    mapgg.getMap(worldImg,LAYER_WORLD_MAP);
+
+    ITexture* worleyTxt=driver->addTexture("ww",worleyImg);
     ITexture* dlaTxt=driver->addTexture("dla",dlaImg);
+    ITexture* worldTxt=driver->addTexture("dla",worldImg);
+
+    IAnimatedMesh* ground=smgr->addTerrainMesh(" ",worldImg,worldImg,dimension2df(32,32),512);
+    ISceneNode* terra=smgr->addAnimatedMeshSceneNode(ground);
+    terra->setMaterialFlag(EMF_LIGHTING,false);
+    terra->setPosition(vector3df(-2048,-32,-2048));
 
 
     while(device->run())
@@ -97,6 +93,7 @@ int main(int argc, char** argv)
         guienv->drawAll();
         driver->draw2DImage(worleyTxt,position2di(0,480-128));
         driver->draw2DImage(dlaTxt,position2di(128,480-128));
+        driver->draw2DImage(worldTxt,position2di(256,480-128));
 
         driver->endScene();
     }
