@@ -6,6 +6,8 @@
 #include <fRandomGenWorley.h>
 #include <fMapGen.h>
 
+#include <fParamLSys.h>
+
 using namespace irr;
 
 using namespace irr::core;
@@ -23,6 +25,9 @@ int main(int argc, char** argv)
 
     device->setWindowCaption(L"Hello World! - Irrlicht Engine Demo");
 
+    fParamLSys b;
+    b.test();
+    return 0;
 
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();

@@ -1,28 +1,22 @@
-#include "fTreeGenSys.h"
-using namespace irr;
+#include "fLSys.h"
 
-using namespace irr::core;
-using namespace irr::scene;
-using namespace irr::video;
-using namespace irr::io;
-using namespace irr::gui;
-
-fTreeGenSys::fTreeGenSys()
+fLSys::fLSys()
 {
     //ctor
     lAxSuccessorCount=0;
 }
 
-fTreeGenSys::~fTreeGenSys()
+fLSys::~fLSys()
 {
     //dtor
 }
+
 
 /** @brief (one liner)
   *
   * (documentation goes here)
   */
-void fTreeGenSys::lRegisterSymbol(char symbol,char next[64])
+void fLSys::lRegisterSymbol(char symbol,char next[64])
 {
     s32 index=lCharToIndex(symbol);
     //quit if symbol is invalid
@@ -42,7 +36,7 @@ void fTreeGenSys::lRegisterSymbol(char symbol,char next[64])
     lSymbolRegistered[index]=true;
 }
 
-void fTreeGenSys::lUnRegisterSymbol(char symbol)
+void fLSys::lUnRegisterSymbol(char symbol)
 {
     s32 index=lCharToIndex(symbol);
     if(index==NULL)
@@ -56,7 +50,7 @@ void fTreeGenSys::lUnRegisterSymbol(char symbol)
     lSymbolRegistered[index]=false;
 }
 
-void fTreeGenSys::lSetStart(char startSymbol[64])
+void fLSys::lSetStart(char startSymbol[64])
 {
     for(u32 i=0;i<strlen(startSymbol);i++)
     {
@@ -64,12 +58,8 @@ void fTreeGenSys::lSetStart(char startSymbol[64])
     }
 }
 
-void fTreeGenSys::lSetAngle(f32 degree)
-{
-    lAngleIncrement=degree;
-}
 
-void fTreeGenSys::lGenerateLSystem(u32 countLoop)
+void fLSys::lGenerateLSystem(u32 countLoop)
 {
     for(u32 nloop=0;nloop<countLoop;nloop++)
     {
@@ -97,14 +87,24 @@ void fTreeGenSys::lGenerateLSystem(u32 countLoop)
         }
         lSwap_axiom();
         lReset_axiom_successor();
+
     }
+}
+u32  fLSys::lGetAxiomCount()
+{
+    return strlen(lAxiomPredecessor);
+}
+
+char fLSys::lGetAxiom(u32 index)
+{
+    return lAxiomPredecessor[index];
 }
 
 /**
     private
 */
 
-s32 fTreeGenSys::lCharToIndex(char symbol)
+s32 fLSys::lCharToIndex(char symbol)
 {
     switch(symbol)
     {
@@ -140,13 +140,14 @@ s32 fTreeGenSys::lCharToIndex(char symbol)
 }
 
 
-void fTreeGenSys::lAddAxiomSuccessor(char symbol)
+void fLSys::lAddAxiomSuccessor(char symbol)
 {
+//    printf("%c",symbol);
     lAxiomSuccessor[lAxSuccessorCount]=symbol;
     lAxSuccessorCount++;
 }
 
-void fTreeGenSys::lSwap_axiom()
+void fLSys::lSwap_axiom()
 {
     for(u32 i=0;i<_MAX_AXIOM_LENGHT_;i++)
     {
@@ -158,18 +159,15 @@ void fTreeGenSys::lSwap_axiom()
     }
 }
 
-void fTreeGenSys::lReset_axiom_successor()
+void fLSys::lReset_axiom_successor()
 {
     lAxSuccessorCount=0;
 }
 
-void fTreeGenSys::lReset_axiom_predecessor()
+void fLSys::lReset_axiom_predecessor()
 {
     for(u32 i=0;i<_MAX_AXIOM_LENGHT_;i++)
     {
         lAxiomPredecessor[i]=0;
     }
 }
-
-
-
