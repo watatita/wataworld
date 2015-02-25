@@ -20,6 +20,8 @@ class fParamLSys
         unsigned char lAxiomPred[_AXIOM_PARAM_ALLOC_];
         unsigned char lAxiomSucc[_AXIOM_PARAM_ALLOC_];
         u32 axiomLenght;
+        char lRegister[54];
+        bool lSymbolRegistered[54];
 
         union VF32
         {
