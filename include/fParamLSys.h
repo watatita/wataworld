@@ -11,15 +11,16 @@ class fParamLSys
     public:
         fParamLSys();
         virtual ~fParamLSys();
-        void lSetStart(char startSymbol[64]);
-        void lRegisterCondition(char startSymbol[64]);
+        void lSetStart(const char* startSymbol);
+        void lRegisterCondition(const char* startSymbol);
         void lGenerateLSystem(u32 countLoop);
+        bool lCheckSyntax(const char* axiomString);
         void test();
     protected:
     private:
 
-        unsigned char lAxiomPred[_AXIOM_PARAM_ALLOC_];
-        unsigned char lAxiomSucc[_AXIOM_PARAM_ALLOC_];
+        char lAxiomPred[_AXIOM_PARAM_ALLOC_];
+        char lAxiomSucc[_AXIOM_PARAM_ALLOC_];
         u32  axiomLenght;
         f32 temp_parameter_register[32];
 

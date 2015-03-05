@@ -3,13 +3,13 @@
 fParamLSys::fParamLSys()
 {
     //ctor
-    axiomLenght=0;
-    char nn[]={'F',2, 0x41,0xa0,0,0,  0x41,0x70,0,0};
-    axiomLenght=10;
-    for(u32 i=0;i<axiomLenght;i++)
+
+    for(u32 i=0;i<_AXIOM_PARAM_ALLOC_;i++)
     {
-        lAxiomPred[i]=nn[i];
+        lAxiomPred[i]='\0';
+        lAxiomSucc[i]='\0';
     }
+    axiomLenght=0;
 }
 
 fParamLSys::~fParamLSys()
@@ -53,6 +53,21 @@ void fParamLSys::test()
     }
 }
 
+void lSetStart(const char* startSymbol)
+{
+    s32 lenght=strlen(startSymbol);
+    for(u32 i=0;i<lenght;i++)
+    {
+        char lAxiomPred[i]=startSymbol[i];
+    }
+}
+
+void lRegisterCondition(const char* startSymbol)
+{
+
+}
+
+
 /** @brief (one liner)
   *
   * (documentation goes here)
@@ -74,5 +89,65 @@ void fParamLSys::lSetStart(char startSymbol[64])
 void fParamLSys::process_Symbol_F(u32 paramcount,f32 x,f32 y, f32 z)
 {
     lRegister[0].
+}
+
+bool fParamLSys::lCheckSyntax(const char* axiomString)
+{
+    s32  lenght=strlen(axiomString);
+    s8   scopeTester=0;
+    bool symbolWithScopeFlag=false;
+    for(u32 i=0;i<lenght;i++)
+    {
+        if(axiomString[i]==' ')
+        {
+            printf("error: <SPACE> is forbidden!\n");
+            return false;
+        }
+
+        if((axiomString[i]>='A')&&(axiomString[i]<='Z'))
+        {
+            symbolWithScopeFlag=true;
+        }
+        if((axiomString[i]=='\\')||
+           (axiomString[i]=='/') ||
+           (axiomString[i]=='+') ||
+           (axiomString[i]=='-') ||
+           (axiomString[i]=='&') ||
+           (axiomString[i]=='^') )
+        {
+            symbolWithScopeFlag=true;
+        }
+
+        if(symbolWithScopeFlag)
+        {
+            if(axiomString[i]=='(')
+            {
+                scopeTester++;
+                symbolWithScopeFlag=false;
+            }else
+            {
+                printf("error: symbol without scope!\n");
+                return false;
+            }
+        }
+
+        if(axiomString[i]==')')
+        {
+            scopeTester--;
+        }
+    }
+
+    if(symbolWithScopeFlag)
+    {
+        printf("error: symbol without scope!\n");
+        return false;
+    }
+    if(scopeTester!=0)
+    {
+        printf("error: scope unmatched!\n");
+        return false;
+    }
+
+    return true;
 }
 
