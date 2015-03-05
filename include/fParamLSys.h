@@ -23,20 +23,17 @@ class fParamLSys
         u32  axiomLenght;
         f32 temp_parameter_register[32];
 
-        bool check_condition(f32 val_1,char logic_op,f32 val_2);
+        void process_Symbol_F(u32 paramcount,f32 x,f32 y, f32 z);
+        s32 lCharToIndex(char symbol);
 
-        struct param_l_condition
-        {
-            char logic_op;
-            f32  comp_value_1;
-            f32  comp_value_2;
-        };
         struct ssymbol
         {
             u32  conditionRegisteredCount;
             bool isRegistered;
-            u8   symbolSuccessor[16][255];
-            s32  param
+            char symbolCondition[16][32];
+            char symbolSuccessor[16][255];
+            s32  param[16];
+            s32  paramCount;
         }lRegister[60];
 
 

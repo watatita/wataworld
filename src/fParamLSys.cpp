@@ -71,4 +71,8 @@ void fParamLSys::lSetStart(char startSymbol[64])
 
 }
 
+void fParamLSys::process_Symbol_F(u32 paramcount,f32 x,f32 y, f32 z)
+{
+    lRegister[0].
+}
 
