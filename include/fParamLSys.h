@@ -24,18 +24,18 @@ class fParamLSys
         u32  axiomLenght;
         f32 temp_parameter_register[32];
 
-        void process_Symbol_F(u32 paramcount,f32 x,f32 y, f32 z);
-        s32 lCharToIndex(char symbol);
+        void lProcessSymbol(char tSymbol,u32 paramcount,f32 x,f32 y, f32 z);
+        s32  lCharToIndex(char symbol);
 
         struct ssymbol
         {
             u32  conditionRegisteredCount;
             bool isRegistered;
             char symbolCondition[16][32];
-            char symbolSuccessor[16][255];
-            s32  param[16];
-            s32  paramCount;
-        }lRegister[60];
+            char symbolSuccessor[16][128];
+            f32  param[4];
+            u32  paramCount;
+        }lRegister[30];
 
 
         union VF32
