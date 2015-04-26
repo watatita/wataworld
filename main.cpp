@@ -63,24 +63,19 @@ int main(int argc, char** argv)
     ISceneNode* cam=smgr->addCameraSceneNodeFPS();
     smgr->setAmbientLight(SColorf(0.91,0.91,0.91,1));
 
-    fRandomGenWorley    ww;
-    fRandomGenDLA       dl;
-    fMapGen             mapgg;
-    mapgg.createWorldMap(&mgen,&dl,&ww);
+    fMapGen mapg(driver);
+    mapg.createWorldMap();
 
-    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
-    IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
-    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
+//    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
+//    IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
+//    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
 
-    mapgg.getMap(dlaImg,LAYER_DLA);
-    mapgg.getMap(worleyImg,LAYER_WORLEY);
-    mapgg.getMap(worldImg,LAYER_WORLD_MAP);
 
-    ITexture* worleyTxt=driver->addTexture("ww",worleyImg);
-    ITexture* dlaTxt=driver->addTexture("dla",dlaImg);
-    ITexture* worldTxt=driver->addTexture("dla",worldImg);
+    ITexture* worleyTxt=driver->addTexture("ww",mapg.getImage(LAYER_WORLEY));
+//    ITexture* dlaTxt=driver->addTexture("dla",dlaImg);
+    ITexture* worldTxt=driver->addTexture("dla",mapg.getImage(LAYER_WORLD_MAP));
 
-    IAnimatedMesh* ground=smgr->addTerrainMesh(" ",worldImg,worldImg,dimension2df(32,32),512);
+    IAnimatedMesh* ground=smgr->addTerrainMesh(" ",mapg.getImage(LAYER_WORLD_MAP),mapg.getImage(LAYER_WORLD_MAP),dimension2df(32,32),512);
     ISceneNode* terra=smgr->addAnimatedMeshSceneNode(ground);
     terra->setMaterialFlag(EMF_LIGHTING,false);
     terra->setPosition(vector3df(-2048,-64,-2048));
@@ -93,7 +88,7 @@ int main(int argc, char** argv)
         smgr->drawAll();
         guienv->drawAll();
         driver->draw2DImage(worleyTxt,position2di(0,480-128));
-        driver->draw2DImage(dlaTxt,position2di(128,480-128));
+//        driver->draw2DImage(dlaTxt,position2di(128,480-128));
         driver->draw2DImage(worldTxt,position2di(256,480-128));
 
         driver->endScene();

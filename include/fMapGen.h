@@ -6,12 +6,13 @@
 #include <fRandomGenDLA.h>
 #include <fRandomGenWorley.h>
 
+#define LAYER_WORLD_MAP     0
 #define LAYER_WORLEY        1
 #define LAYER_DLA           2
 #define LAYER_MOUNTAIN      3
 #define LAYER_LAND          4
 #define LAYER_OCEAN_MASK    5
-#define LAYER_WORLD_MAP     6
+
 #define LAYER_HUMIDITY      7
 #define LAYER_TEMPERATE     8
 #define LAYER_BIOME         9
@@ -33,19 +34,21 @@ class fMapGen
 {
     public:
         fMapGen();
+        fMapGen(IVideoDriver* driver);
+
         virtual ~fMapGen();
     //color conversion
-        void createWorldMap(fMathGenerator* fmg,
-                            fRandomGenDLA*  dla,
-                            fRandomGenWorley* worley);
+        void createWorldMap();
         u32 getMap(u32 x,u32 y,u32 layer);
         u32 getMap(IImage* img,u32 layer);
+        IImage* getImage(u32 layer);
 
     protected:
     private:
         fMathGenerator* fmg;
         fRandomGenDLA*  dla;
         fRandomGenWorley* worley;
+        IImage* MapGenImage[16];
 
         u8 TextureLayer[16][_MAP_SIZE_][_MAP_SIZE_];
 };
