@@ -25,10 +25,6 @@ int main(int argc, char** argv)
 
     device->setWindowCaption(L"Hello World! - Irrlicht Engine Demo");
 
-    fParamLSys b;
-    b.test();
-    return 0;
-
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();
     IGUIEnvironment* guienv = device->getGUIEnvironment();
@@ -67,14 +63,14 @@ int main(int argc, char** argv)
     ISceneNode* cam=smgr->addCameraSceneNodeFPS();
     smgr->setAmbientLight(SColorf(0.91,0.91,0.91,1));
 
-    fRandomGenWorley ww;
-    fRandomGenDLA dl;
-    fMapGen mapgg;
+    fRandomGenWorley    ww;
+    fRandomGenDLA       dl;
+    fMapGen             mapgg;
     mapgg.createWorldMap(&mgen,&dl,&ww);
 
-    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
-    IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
-    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(128,128));
+    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
+    IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
+    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
 
     mapgg.getMap(dlaImg,LAYER_DLA);
     mapgg.getMap(worleyImg,LAYER_WORLEY);

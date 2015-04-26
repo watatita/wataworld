@@ -2,6 +2,7 @@
 #define FRANDOMGENWORLEY_H
 
 #include <irrlicht.h>
+#define _IMG_WORLEY_SIZE_ 128
 
 using namespace irr;
 using namespace irr::core;
@@ -22,7 +23,7 @@ class fRandomGenWorley
     protected:
     private:
         array<vector2df> worley_point;
-        f32 img_worley[128][128];
+        f32 img_worley[_IMG_WORLEY_SIZE_][_IMG_WORLEY_SIZE_];
 };
 
 #endif // FRANDOMGENWORLEY_H

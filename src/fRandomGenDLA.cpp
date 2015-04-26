@@ -2,9 +2,9 @@
 
 fRandomGenDLA::fRandomGenDLA()
 {
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_IMAGE_DLA_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_IMAGE_DLA_SIZE_;i++)
         {
             img_dla[i][j]=0;
         }
@@ -144,7 +144,7 @@ void fRandomGenDLA::plotLine(int x0, int y0, int x1, int y1)
 
 f32 fRandomGenDLA::getImage(u32 x,u32 y)
 {
-    x=x%128;
-    y=y%128;
+    x=x%_IMAGE_DLA_SIZE_;
+    y=y%_IMAGE_DLA_SIZE_;
     return img_dla[x][y];
 }

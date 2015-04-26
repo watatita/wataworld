@@ -125,15 +125,18 @@ void fParamLSys::lGenerateLSystem(u32 countLoop)
   */
 void fParamLSys::lSetStart(const char* startSymbol)
 {
+    /*
     s32 lenght=strlen(startSymbol);
     for(u32 i=0;i<lenght;i++)
     {
         char lAxiomPred[i]=startSymbol[i];
     }
+    */
 }
 
 void fParamLSys::lProcessSymbol(char tSymbol,u32 paramcount,f32 x,f32 y, f32 z)
 {
+    /*
     s32 index=lCharToIndex(tSymbol);
     if(index==NULL)
     {
@@ -150,6 +153,7 @@ void fParamLSys::lProcessSymbol(char tSymbol,u32 paramcount,f32 x,f32 y, f32 z)
             case '(':
         }
     }
+    */
 
 }
 

@@ -31,7 +31,7 @@ class fRandomGenDLA
     private:
 
 
-        f32 img_dla[128][128];
+        f32 img_dla[_IMAGE_DLA_SIZE_][_IMAGE_DLA_SIZE_];
 
         array<vector2df> diffuse_point;
 

@@ -24,17 +24,17 @@ void fMapGen::createWorldMap(fMathGenerator* fmg,
     worley->worleyInitWorleyLayer();
     dla->dlaCreateDLA(64,64,50);
 
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_MAP_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_MAP_SIZE_;i++)
         {
             TextureLayer[LAYER_DLA][i][j]=dla->getImage(i,j)*0xff;
         }
     }
 
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_MAP_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_MAP_SIZE_;i++)
         {
             f32 w=worley->worleyGetValue(i,j);
             s32 c=(u32) 0x80*w*fmg->GradientFrame(i,j)*
@@ -56,9 +56,9 @@ u32 fMapGen::getMap(u32 x,u32 y,u32 layer)
 
 u32 fMapGen::getMap(IImage* img,u32 layer)
 {
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_MAP_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_MAP_SIZE_;i++)
         {
             s32 c=(u32) TextureLayer[layer][i][j];
             img->setPixel(i,j,SColor(0xff,c,c,c));

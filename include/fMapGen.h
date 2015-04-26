@@ -21,6 +21,7 @@
 #define LAYER_POISSON_3     13
 #define LAYER_ZOOM_1        14
 
+#define _MAP_SIZE_  128
 using namespace irr;
 using namespace irr::core;
 using namespace irr::video;
@@ -46,7 +47,7 @@ class fMapGen
         fRandomGenDLA*  dla;
         fRandomGenWorley* worley;
 
-        u8 TextureLayer[16][128][128];
+        u8 TextureLayer[16][_MAP_SIZE_][_MAP_SIZE_];
 };
 
 #endif // FMAPGEN_H

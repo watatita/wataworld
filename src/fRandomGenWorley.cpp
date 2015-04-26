@@ -38,9 +38,9 @@ void fRandomGenWorley::worleyInitWorleyLayer()
         worley_point.push_back(next_point);
     }
 
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_IMG_WORLEY_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_IMG_WORLEY_SIZE_;i++)
         {
             img_worley[i][j]=worleyGetDistance(i,j);
             if(img_worley[i][j]>highest)
@@ -48,9 +48,9 @@ void fRandomGenWorley::worleyInitWorleyLayer()
         }
     }
 
-    for(u32 j=0;j<128;j++)
+    for(u32 j=0;j<_IMG_WORLEY_SIZE_;j++)
     {
-        for(u32 i=0;i<128;i++)
+        for(u32 i=0;i<_IMG_WORLEY_SIZE_;i++)
         {
             img_worley[i][j]=img_worley[i][j]/highest;
         }
@@ -77,7 +77,7 @@ f32  fRandomGenWorley::worleyGetDistance(f32 x,f32 y)
 
 f32 fRandomGenWorley::worleyGetValue(u32 x,u32 y)
 {
-    x=x%128;
-    y=y%128;
+    x=x%_IMG_WORLEY_SIZE_;
+    y=y%_IMG_WORLEY_SIZE_;
     return img_worley[x][y];
 }
