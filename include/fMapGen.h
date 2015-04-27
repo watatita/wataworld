@@ -42,10 +42,12 @@ class fMapGen
         u32 getMap(u32 x,u32 y,u32 layer);
         u32 getMap(IImage* img,u32 layer);
         IImage* getImage(u32 layer);
+        f32 scaleImage(f32 x, f32 y,f32 scale);
+        fMathGenerator* fmg;
 
     protected:
     private:
-        fMathGenerator* fmg;
+
         fRandomGenDLA*  dla;
         fRandomGenWorley* worley;
         IImage* MapGenImage[16];

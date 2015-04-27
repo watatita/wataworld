@@ -66,6 +66,18 @@ int main(int argc, char** argv)
     fMapGen mapg(driver);
     mapg.createWorldMap();
 
+    IImage* worldLayout=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(4096,4096));
+    for(u32 j=0;j<4096;j++)
+    {
+        for(u32 i=0;i<4096;i++)
+        {
+            u32 c=(u32) mapg.scaleImage(i,j,33);
+            if(c<40) c=0;
+            worldLayout->setPixel(i,j,SColor(0xff,c,c,c));
+        }
+    }
+    driver->writeImageToFile(worldLayout,"map.png");
+
 //    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
 //    IImage* dlaImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
 //    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
