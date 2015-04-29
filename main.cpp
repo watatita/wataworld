@@ -65,17 +65,20 @@ int main(int argc, char** argv)
 
     fMapGen mapg(driver);
     mapg.createWorldMap();
+    IImage* worldLayout=mapg.getImage(LAYER_DLA);
 
-    IImage* worldLayout=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(4096,4096));
-    for(u32 j=0;j<4096;j++)
-    {
-        for(u32 i=0;i<4096;i++)
-        {
-            u32 c=(u32) mapg.scaleImage(i,j,33);
-            if(c<40) c=0;
-            worldLayout->setPixel(i,j,SColor(0xff,c,c,c));
-        }
-    }
+
+//    IImage* worldLayout=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(4096,4096));
+//    IImage* worldLayout=driver->createImage(ECF_R8G8B8,dimension2d<u32>(4096,4096));
+//    for(u32 j=0;j<4096;j++)
+//    {
+//        for(u32 i=0;i<4096;i++)
+//        {
+//            u32 c=(u32) mapg.scaleImage(i,j,33);
+//            if(c<40) c=0;
+//            worldLayout->setPixel(i,j,SColor(0xff,c,c,c));
+//        }
+//    }
     driver->writeImageToFile(worldLayout,"map.png");
 
 //    IImage* worleyImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
@@ -83,28 +86,28 @@ int main(int argc, char** argv)
 //    IImage* worldImg=driver->createImage(ECF_A8R8G8B8,dimension2d<u32>(_MAP_SIZE_,_MAP_SIZE_));
 
 
-    ITexture* worleyTxt=driver->addTexture("ww",mapg.getImage(LAYER_WORLEY));
+//    ITexture* worleyTxt=driver->addTexture("ww",mapg.getImage(LAYER_WORLEY));
 //    ITexture* dlaTxt=driver->addTexture("dla",dlaImg);
-    ITexture* worldTxt=driver->addTexture("dla",mapg.getImage(LAYER_WORLD_MAP));
+//    ITexture* worldTxt=driver->addTexture("dla",mapg.getImage(LAYER_WORLD_MAP));
 
-    IAnimatedMesh* ground=smgr->addTerrainMesh(" ",mapg.getImage(LAYER_WORLD_MAP),mapg.getImage(LAYER_WORLD_MAP),dimension2df(32,32),512);
-    ISceneNode* terra=smgr->addAnimatedMeshSceneNode(ground);
-    terra->setMaterialFlag(EMF_LIGHTING,false);
-    terra->setPosition(vector3df(-2048,-64,-2048));
-
-
-    while(device->run())
-    {
-        driver->beginScene(true, true, SColor(0,200,200,200));
-
-        smgr->drawAll();
-        guienv->drawAll();
-        driver->draw2DImage(worleyTxt,position2di(0,480-128));
-//        driver->draw2DImage(dlaTxt,position2di(128,480-128));
-        driver->draw2DImage(worldTxt,position2di(256,480-128));
-
-        driver->endScene();
-    }
+//    IAnimatedMesh* ground=smgr->addTerrainMesh(" ",mapg.getImage(LAYER_WORLD_MAP),mapg.getImage(LAYER_WORLD_MAP),dimension2df(32,32),512);
+//    ISceneNode* terra=smgr->addAnimatedMeshSceneNode(ground);
+//    terra->setMaterialFlag(EMF_LIGHTING,false);
+//    terra->setPosition(vector3df(-2048,-64,-2048));
+//
+//
+//    while(device->run())
+//    {
+//        driver->beginScene(true, true, SColor(0,200,200,200));
+//
+//        smgr->drawAll();
+//        guienv->drawAll();
+//        driver->draw2DImage(worleyTxt,position2di(0,480-128));
+////        driver->draw2DImage(dlaTxt,position2di(128,480-128));
+//        driver->draw2DImage(worldTxt,position2di(256,480-128));
+//
+//        driver->endScene();
+//    }
 
 
     device->drop();

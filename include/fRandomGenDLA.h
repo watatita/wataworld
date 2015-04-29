@@ -24,14 +24,28 @@ class fRandomGenDLA
         void setPixel(int x, int y);
         void plotLine(int x0, int y0, int x1, int y1);
 
+        void dlaCreateMountain();
+
         f32 getImage(u32 x,u32 y);
 
 
     protected:
     private:
 
-
         f32 img_dla[_IMAGE_DLA_SIZE_][_IMAGE_DLA_SIZE_];
+
+        void gauss_process(s32 radius);
+        void initGaussTable(s32 radius);
+        void resetGauss();
+
+        f32 getGaussTable(s32 x,s32 y);
+
+        f32 gaussTable[64][64];
+        f32 gaussSum;
+        u32 gaussRadius;
+
+        f32 gauss_srcs_vector[256][256];
+        f32 gauss_proc_vector[256][256];
 
         array<vector2df> diffuse_point;
 

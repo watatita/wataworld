@@ -33,8 +33,19 @@ fMapGen::~fMapGen()
 
 void fMapGen::createWorldMap()
 {
+    dla->dlaCreateMountain();
+    for(u32 j=0;j<_MAP_SIZE_;j++)
+    {
+        for(u32 i=0;i<_MAP_SIZE_;i++)
+        {
+            s32 c=dla->getImage(i,j)*0xff;
+            if(c>0xff) c=0xff;
+            MapGenImage[LAYER_DLA]->setPixel(i,j,SColor(0xff,c,c,c));
+        }
+    }
+
+    /*
     worley->worleyInitWorleyLayer();
-    dla->dlaCreateDLA(64,64,50);
 
     for(u32 j=0;j<_MAP_SIZE_;j++)
     {
@@ -63,7 +74,7 @@ void fMapGen::createWorldMap()
             MapGenImage[LAYER_WORLD_MAP]->setPixel(i,j,SColor(0xff,c,c,c));
             MapGenImage[LAYER_WORLEY]->setPixel(i,j,SColor(0xff,wc,wc,wc));
         }
-    }
+    }*/
 }
 
 IImage* fMapGen::getImage(u32 layer)

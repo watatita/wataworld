@@ -44,7 +44,7 @@ void fRandomGenDLA::dlaCreateDLA(u32 x,u32 y,f32 radius)
             x_mark.X = x_mark.X+round(5*cos(angle));
             x_mark.Y = x_mark.Y+round(5*sin(angle));
 
-            while(dlaIsOutOfPosition(x_mark,center,100))
+            while(dlaIsOutOfPosition(x_mark,center,200))
             {
                 r2 = rand() % 8;
                 angle = 0.0175*r2*45;// 0.0055= 1/180 derajat
@@ -147,4 +147,118 @@ f32 fRandomGenDLA::getImage(u32 x,u32 y)
     x=x%_IMAGE_DLA_SIZE_;
     y=y%_IMAGE_DLA_SIZE_;
     return img_dla[x][y];
+}
+
+void fRandomGenDLA::dlaCreateMountain()
+{
+    dlaCreateDLA(10,10,60);
+    dlaCreateDLA(30,10,60);
+    dlaCreateDLA(60,10,60);
+    dlaCreateDLA(110,10,60);
+    dlaCreateDLA(60,60,60);
+
+    gauss_process(2);
+    for(u32 j=0; j<128; j++)
+    {
+        for(u32 i=0; i<128; i++)
+        {
+            img_dla[i][j]+=(gauss_srcs_vector[i+64][j+64]*16);
+        }
+    }
+    gauss_process(4);
+    for(u32 j=0; j<128; j++)
+    {
+        for(u32 i=0; i<128; i++)
+        {
+            img_dla[i][j]+=gauss_srcs_vector[i+64][j+64];
+        }
+    }
+}
+
+void fRandomGenDLA::gauss_process(s32 radius)
+{
+
+    for(u32 j=0; j<128; j++)
+    {
+        for(u32 i=0; i<128; i++)
+        {
+            gauss_srcs_vector[i+64][j+64]=img_dla[i][j];
+        }
+    }
+
+    initGaussTable(radius);
+
+    for (u32 j=0;j<256;j++)
+    {
+        for (u32 i=0;i<256;i++)
+        {
+            gauss_proc_vector[i][j]=0;
+        }
+    }
+
+    for(u32 j=64; j<(128+64); j++)
+    {
+        for(u32 i=64; i<(128+64); i++)
+        {
+            f32 val=0;
+            for(s32 jn = -radius;jn <= radius; jn++)
+            {
+                for(s32 in = -radius;in <= radius; in++)
+                {
+//                    if((gauss_srcs_vector[i+in][j+jn] * getGaussTable(in,jn))>0)
+//                        printf("%f\n",(gauss_srcs_vector[i+in][j+jn] * getGaussTable(in,jn)));
+                    val += (gauss_srcs_vector[i+in][j+jn] * getGaussTable(in,jn));
+//                    printf("%f %f\n",in,jn);
+                }
+            }
+
+
+            gauss_proc_vector[i][j]=val;//(val/gaussSum);
+        }
+    }
+}
+
+void fRandomGenDLA::initGaussTable(s32 radius)
+{
+    if(radius!=gaussRadius)
+    {
+        gaussRadius=radius;
+        s32 r=radius;
+        for(u32 j=0;j<=radius;j++)
+        {
+            for(u32 i=0;i<=radius;i++)
+            {
+                f32 dsq=i*i+j*j;
+                f32 wgt=exp(-dsq/(2*radius*radius));
+                wgt=wgt/(2*3.14*radius*radius);
+                gaussTable[i][j]=wgt;
+            }
+        }
+
+        gaussSum=0;
+        for(s32 jn=-r;jn<=r;jn++)
+        {
+            for(s32 in=-r;in<=r;in++)
+            {
+                gaussSum=gaussSum+getGaussTable(in,jn);
+            }
+        }
+    }
+}
+void fRandomGenDLA::resetGauss()
+{
+    for (u32 j=0;j<256;j++)
+    {
+        for (u32 i=0;i<256;i++)
+        {
+            gauss_srcs_vector[i][j]=0;
+        }
+    }
+}
+
+f32  fRandomGenDLA::getGaussTable(s32 x,s32 y)
+{
+    u32 ux=abs(x);
+    u32 uy=abs(y);
+    return gaussTable[ux][uy];
 }
